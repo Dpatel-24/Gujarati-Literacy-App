@@ -40,10 +40,13 @@ export interface DecomposeResult {
 }
 
 /**
- * The 13 independent Gujarati vowels, in traditional varnamala order.
- * અં (anusvara-marked) and અઃ (visarga-marked) are included as
- * independent vowel forms per the assignment spec, even though અં/અઃ
- * are technically અ + anusvara/visarga rather than atomic vowel letters.
+ * The 13 independent Gujarati vowels (સ્વર), in traditional varnamala
+ * order: અ આ ઇ ઈ ઉ ઊ ઋ એ ઐ ઓ ઔ + અં અઃ. અં (anusvara-marked) and
+ * અઃ (visarga-marked) are included as independent vowel forms per the
+ * standard chart, even though they're technically અ + anusvara/visarga
+ * rather than atomic vowel letters. ઋ (vocalic r) is a legitimate
+ * independent vowel in the traditional Sanskrit-derived varnamala,
+ * distinct from ર (the consonant "ra") — don't confuse the two.
  */
 export const INDEPENDENT_VOWELS: readonly VowelInfo[] = [
   { char: 'અ', name: 'a', phoneticEnglish: 'a' },
@@ -52,6 +55,7 @@ export const INDEPENDENT_VOWELS: readonly VowelInfo[] = [
   { char: 'ઈ', name: 'ii', phoneticEnglish: 'ee' },
   { char: 'ઉ', name: 'u', phoneticEnglish: 'u' },
   { char: 'ઊ', name: 'uu', phoneticEnglish: 'oo' },
+  { char: 'ઋ', name: 'ri', phoneticEnglish: 'ri' },
   { char: 'એ', name: 'e', phoneticEnglish: 'e' },
   { char: 'ઐ', name: 'ai', phoneticEnglish: 'ai' },
   { char: 'ઓ', name: 'o', phoneticEnglish: 'o' },
@@ -123,6 +127,7 @@ export const MATRAS: readonly MatraInfo[] = [
   { char: 'ી', vowelName: 'ii', phoneticEnglish: 'ee' },
   { char: 'ુ', vowelName: 'u', phoneticEnglish: 'u' },
   { char: 'ૂ', vowelName: 'uu', phoneticEnglish: 'oo' },
+  { char: 'ૃ', vowelName: 'ri', phoneticEnglish: 'ri' },
   { char: 'ે', vowelName: 'e', phoneticEnglish: 'e' },
   { char: 'ૈ', vowelName: 'ai', phoneticEnglish: 'ai' },
   { char: 'ો', vowelName: 'o', phoneticEnglish: 'o' },
