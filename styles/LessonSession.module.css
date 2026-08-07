@@ -1,0 +1,265 @@
+.leaf {
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--paper-dim);
+  border: 1px solid rgba(184, 147, 74, 0.4); /* var(--gold) at reduced opacity */
+  border-radius: 6px;
+  padding: 2rem 1.75rem;
+}
+
+.progress {
+  color: var(--ink);
+  opacity: 0.6;
+  margin-bottom: 1.5rem;
+}
+
+/* Quiet fade between phases / items. Neutralized globally for
+   prefers-reduced-motion (see globals.css), so no extra guard needed
+   here. */
+.fadeIn {
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Flashcard phase ---------- */
+
+.heroWrap {
+  text-align: center;
+  margin: 1rem 0 1.5rem;
+}
+
+/* Plain hero: used when there's no letter breakdown showing (all
+   letters, and words/sentences before the toggle is switched on). */
+.hero {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+/* Interlinear hero: one flex column per grapheme cluster, so each
+   annotation sits directly beneath the character it describes rather
+   than in a disconnected list. Swapped in only when the breakdown
+   toggle is on. */
+.heroInterlinear {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+}
+
+.heroChar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroCharGlyph {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.heroCharAnnotation {
+  font-family: var(--font-gujarati-body);
+  font-size: 0.7rem;
+  color: var(--rubric);
+  white-space: nowrap;
+  margin-top: 0.15rem;
+}
+
+.phoneticText {
+  text-align: center;
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.meaningText {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--ink);
+  opacity: 0.75;
+  margin-bottom: 1.25rem;
+}
+
+.breakdownSection {
+  margin: 1.5rem 0;
+}
+
+.breakdownToggle {
+  display: block;
+  margin: 0 auto 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(42, 36, 32, 0.35); /* var(--ink) at reduced opacity */
+  color: var(--ink);
+  opacity: 0.75;
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  padding: 0.35rem 0;
+  min-height: 44px;
+}
+
+.actionRow {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+/* Reveal / Continue to quiz / Next -- one consistent understated
+   button treatment, rubric as the accent. */
+.primaryButton {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--rubric);
+  background: transparent;
+  border: 1px solid var(--rubric);
+  border-radius: 4px;
+  padding: 0.75rem 1.75rem;
+  min-height: 44px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.primaryButton:hover {
+  box-shadow: 0 2px 6px rgba(154, 51, 36, 0.25);
+  transform: translateY(-1px);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ---------- Quiz phase ---------- */
+
+.quizHeroWrap {
+  text-align: center;
+  margin: 0.5rem 0 1rem;
+}
+
+.quizHero {
+  font-family: var(--font-display);
+  font-size: 3.25rem;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.quizPrompt {
+  text-align: center;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.optionButton {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  text-align: left;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 0.85rem 1.1rem;
+  min-height: 48px;
+}
+
+.optionCorrect {
+  background: var(--peacock);
+  border-color: var(--peacock);
+  color: var(--paper);
+}
+
+.optionIncorrect {
+  background: var(--rubric);
+  border-color: var(--rubric);
+  color: var(--paper);
+}
+
+/* The actually-correct option, shown when the user picked something
+   else -- a lighter peacock tint + border rather than the full solid
+   fill used for the selected answers, so it reads as "this was the
+   answer" rather than "you picked this". */
+.optionCorrectReveal {
+  background: rgba(31, 92, 86, 0.15); /* var(--peacock) tint */
+  border-color: var(--peacock);
+  border-width: 2px;
+  color: var(--ink);
+}
+
+.feedbackRow {
+  text-align: center;
+}
+
+.feedbackText {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+}
+
+.feedbackCorrect {
+  color: var(--peacock);
+}
+
+.feedbackIncorrect {
+  color: var(--rubric);
+}
+
+.recordError {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--rubric);
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Empty / fallback states ---------- */
+
+.emptyState {
+  font-family: var(--font-body);
+  color: var(--ink);
+  text-align: center;
+  padding: 2rem;
+}
+
+@media (max-width: 480px) {
+  .leaf {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .hero,
+  .heroCharGlyph {
+    font-size: 3.75rem;
+  }
+
+  .quizHero {
+    font-size: 2.75rem;
+  }
+
+  .primaryButton,
+  .optionButton {
+    width: 100%;
+  }
+}

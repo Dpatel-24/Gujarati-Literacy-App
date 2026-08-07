@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { decompose, toGraphemeClusters } from '@/lib/gujarati-script';
+import { decompose, toGraphemeClusters, type DecomposeResult } from '@/lib/gujarati-script';
 import { generateMultipleChoice, type ContentItem, type MultipleChoiceQuestion } from '@/lib/quiz';
+import styles from '@/styles/LessonSession.module.css';
 
 export type { ContentItem };
 
@@ -10,6 +11,26 @@ export interface LessonSessionProps {
 }
 
 type Phase = 'flashcard' | 'quiz';
+
+/**
+ * Short interlinear-gloss label for one grapheme cluster's breakdown,
+ * e.g. "ka+aa" for કા, "ka" for bare ક, "a" for a bare vowel. Kept
+ * terse on purpose -- these render tiny, directly under each
+ * character, manuscript-annotation style, not as a verbose legend.
+ */
+function annotationFor(d: DecomposeResult): string {
+  let label: string;
+  if (d.consonant && d.matra && d.matraName) {
+    label = `${d.consonantPhonetic}+${d.matraName}`;
+  } else if (d.consonant && !d.matra) {
+    label = d.consonantPhonetic ?? '';
+  } else if (!d.consonant && d.matraName) {
+    label = d.matraName;
+  } else {
+    label = '?';
+  }
+  return d.isCompound ? `${label}*` : label;
+}
 
 /**
  * Walks through `items` one at a time: flashcard (reveal phonetic +
@@ -43,14 +64,22 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
   }, [index]);
 
   if (items.length === 0) {
-    return <p>No items in this session.</p>;
+    return (
+      <div className={styles.leaf}>
+        <p className={styles.emptyState}>No items in this session.</p>
+      </div>
+    );
   }
 
   if (!currentItem) {
     // index has run past the end -- shouldn't normally be visible since
     // handleNext calls onComplete instead of over-advancing, but guard
     // against it rather than crashing on undefined.
-    return <p>Session complete.</p>;
+    return (
+      <div className={styles.leaf}>
+        <p className={styles.emptyState}>Session complete.</p>
+      </div>
+    );
   }
 
   const showsBreakdown = currentItem.item_type === 'word' || currentItem.item_type === 'sentence';
@@ -91,30 +120,34 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
     }
   }
 
+  const graphemeClusters = showsBreakdown ? toGraphemeClusters(currentItem.gujarati_text) : [];
+
   return (
-    <div
-      style={{
-        fontFamily: 'system-ui, sans-serif',
-        maxWidth: 600,
-        background: '#fff',
-        color: '#111',
-        padding: '1.5rem',
-        borderRadius: 8,
-      }}
-    >
-      <p style={{ color: '#666', marginBottom: '1rem' }}>
-        Item {index + 1} of {items.length}
+    <div className={styles.leaf}>
+      <p className={`text-small ${styles.progress}`}>
+        Leaf {index + 1} of {items.length}
       </p>
 
       {phase === 'flashcard' && (
-        <div>
-          <div style={{ fontSize: '4rem', textAlign: 'center', margin: '1rem 0' }}>
-            {currentItem.gujarati_text}
+        <div key={`flashcard-${index}`} className={styles.fadeIn}>
+          <div className={styles.heroWrap}>
+            {showBreakdown && showsBreakdown ? (
+              <div className={styles.heroInterlinear}>
+                {graphemeClusters.map((cluster, i) => (
+                  <span key={i} className={styles.heroChar}>
+                    <span className={styles.heroCharGlyph}>{cluster}</span>
+                    <span className={styles.heroCharAnnotation}>{annotationFor(decompose(cluster))}</span>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.hero}>{currentItem.gujarati_text}</div>
+            )}
           </div>
 
           {!revealed && (
-            <div style={{ textAlign: 'center' }}>
-              <button onClick={() => setRevealed(true)} style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>
+            <div className={styles.actionRow}>
+              <button onClick={() => setRevealed(true)} className={styles.primaryButton}>
                 Reveal
               </button>
             </div>
@@ -122,60 +155,19 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
 
           {revealed && (
             <div>
-              <div style={{ textAlign: 'center', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-                {currentItem.phonetic_text}
-              </div>
-              {currentItem.meaning && (
-                <div style={{ textAlign: 'center', fontSize: '1.1rem', color: '#444', marginBottom: '1rem' }}>
-                  {currentItem.meaning}
-                </div>
-              )}
+              <div className={styles.phoneticText}>{currentItem.phonetic_text}</div>
+              {currentItem.meaning && <div className={styles.meaningText}>{currentItem.meaning}</div>}
 
               {showsBreakdown && (
-                <div style={{ margin: '1rem 0' }}>
-                  <button
-                    onClick={() => setShowBreakdown((s) => !s)}
-                    style={{ padding: '0.4rem 1rem', marginBottom: '0.75rem' }}
-                  >
+                <div className={styles.breakdownSection}>
+                  <button onClick={() => setShowBreakdown((s) => !s)} className={styles.breakdownToggle}>
                     {showBreakdown ? 'Hide letter breakdown' : 'Show letter breakdown'}
                   </button>
-
-                  {showBreakdown && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                      {toGraphemeClusters(currentItem.gujarati_text).map((cluster, i) => {
-                        const d = decompose(cluster);
-                        return (
-                          <div
-                            key={i}
-                            style={{
-                              border: '1px solid #ccc',
-                              borderRadius: 4,
-                              padding: '0.5rem',
-                              textAlign: 'center',
-                              minWidth: 60,
-                            }}
-                          >
-                            <div style={{ fontSize: '1.75rem' }}>{cluster}</div>
-                            <div style={{ fontSize: '0.8rem', color: '#555' }}>
-                              {d.consonant && <div>consonant: {d.consonantPhonetic}</div>}
-                              {/* d.matra set means an attached vowel sign; matraName alone (no
-                                  matra, no consonant) means this cluster is a bare independent
-                                  vowel, which decompose() also reports via matraName. */}
-                              {d.matra && d.matraName && <div>matra: {d.matraName}</div>}
-                              {d.consonant && !d.matra && <div>vowel: a (inherent)</div>}
-                              {!d.consonant && d.matraName && <div>vowel: {d.matraName}</div>}
-                              {d.isCompound && <div style={{ color: '#a60' }}>conjunct (partial)</div>}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
               )}
 
-              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <button onClick={handleContinueToQuiz} style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>
+              <div className={styles.actionRow}>
+                <button onClick={handleContinueToQuiz} className={styles.primaryButton}>
                   Continue to quiz
                 </button>
               </div>
@@ -185,35 +177,37 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
       )}
 
       {phase === 'quiz' && quiz && (
-        <div>
-          <div style={{ fontSize: '3rem', textAlign: 'center', margin: '1rem 0' }}>
-            {currentItem.gujarati_text}
+        <div key={`quiz-${index}`} className={styles.fadeIn}>
+          <div className={styles.quizHeroWrap}>
+            <div className={styles.quizHero}>{currentItem.gujarati_text}</div>
           </div>
-          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>{quizPrompt}</p>
+          <p className={styles.quizPrompt}>{quizPrompt}</p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '1rem 0' }}>
+          <div className={styles.optionsList}>
             {quiz.options.map((option, i) => {
               const isSelected = selectedOption === option;
               const isCorrectOption = option === quiz.correctAnswer;
-              let background = '#fff';
+
+              let optionClassName = styles.optionButton;
               if (selectedOption) {
-                if (isCorrectOption) background = '#c8f7c5';
-                else if (isSelected) background = '#f7c5c5';
+                if (isSelected && isCorrectOption) {
+                  optionClassName = `${styles.optionButton} ${styles.optionCorrect}`;
+                } else if (isSelected && !isCorrectOption) {
+                  optionClassName = `${styles.optionButton} ${styles.optionIncorrect}`;
+                } else if (isCorrectOption) {
+                  // The user picked something else -- show which one
+                  // actually was correct with the lighter tint, not
+                  // the full "you picked this" fill.
+                  optionClassName = `${styles.optionButton} ${styles.optionCorrectReveal}`;
+                }
               }
+
               return (
                 <button
                   key={i}
                   onClick={() => handleSelectOption(option)}
                   disabled={!!selectedOption}
-                  style={{
-                    padding: '0.6rem 1rem',
-                    fontSize: '1.1rem',
-                    textAlign: 'left',
-                    background,
-                    color: '#111',
-                    border: '1px solid #ccc',
-                    borderRadius: 4,
-                  }}
+                  className={optionClassName}
                 >
                   {option}
                 </button>
@@ -222,12 +216,16 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
           </div>
 
           {selectedOption && (
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ fontWeight: 'bold', color: selectedOption === quiz.correctAnswer ? 'green' : 'crimson' }}>
-                {selectedOption === quiz.correctAnswer ? 'Correct!' : `Incorrect. Correct answer: ${quiz.correctAnswer}`}
+            <div className={styles.feedbackRow}>
+              <p
+                className={`${styles.feedbackText} ${
+                  selectedOption === quiz.correctAnswer ? styles.feedbackCorrect : styles.feedbackIncorrect
+                }`}
+              >
+                {selectedOption === quiz.correctAnswer ? 'Correct' : `Incorrect — correct answer: ${quiz.correctAnswer}`}
               </p>
-              {recordError && <p style={{ color: 'crimson', fontSize: '0.85rem' }}>{recordError}</p>}
-              <button onClick={handleNext} style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>
+              {recordError && <p className={styles.recordError}>{recordError}</p>}
+              <button onClick={handleNext} className={styles.primaryButton}>
                 Next
               </button>
             </div>

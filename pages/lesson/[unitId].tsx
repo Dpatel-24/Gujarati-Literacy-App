@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import type { GetServerSideProps } from 'next';
 import { query } from '@/lib/db';
 import LessonSession, { type ContentItem } from '@/components/LessonSession';
+import styles from '@/styles/PageShell.module.css';
 
 const SESSION_SIZE_CAP = 20;
 
@@ -55,12 +56,16 @@ export default function LessonPage({ unitName, items }: LessonPageProps) {
       <Head>
         <title>{unitName ? `Lesson: ${unitName}` : 'Lesson'}</title>
       </Head>
-      <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
+      <main className={styles.page}>
         {items.length === 0 ? (
           <div>
-            <h1>{unitName ?? 'Lesson'}</h1>
-            <p>Nothing to study here right now — no due or new items in this chapter.</p>
-            <Link href="/">Back to home</Link>
+            <h1 className={`text-page-heading ${styles.pageHeading}`}>{unitName ?? 'Lesson'}</h1>
+            <div className={styles.emptyLeaf}>
+              <p className={styles.emptyMessage}>Nothing to study here right now.</p>
+              <Link href="/" className={styles.backLink}>
+                Back to home
+              </Link>
+            </div>
           </div>
         ) : (
           <LessonSession items={items} onComplete={handleComplete} />

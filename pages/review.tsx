@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import type { GetServerSideProps } from 'next';
 import { query } from '@/lib/db';
 import LessonSession, { type ContentItem } from '@/components/LessonSession';
+import styles from '@/styles/PageShell.module.css';
 
 const SESSION_SIZE_CAP = 20;
 
@@ -37,12 +38,16 @@ export default function ReviewPage({ items }: ReviewPageProps) {
       <Head>
         <title>Review</title>
       </Head>
-      <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
+      <main className={styles.page}>
         {items.length === 0 ? (
           <div>
-            <h1>Review</h1>
-            <p>Nothing due for review right now.</p>
-            <Link href="/">Back to home</Link>
+            <h1 className={`text-page-heading ${styles.pageHeading}`}>Review</h1>
+            <div className={styles.emptyLeaf}>
+              <p className={styles.emptyMessage}>Nothing due right now.</p>
+              <Link href="/" className={styles.backLink}>
+                Back to home
+              </Link>
+            </div>
           </div>
         ) : (
           <LessonSession items={items} onComplete={handleComplete} />

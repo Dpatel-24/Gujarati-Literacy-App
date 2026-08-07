@@ -1,0 +1,43 @@
+/* Shared page-level chrome for pages that embed LessonSession
+   (review.tsx, lesson/[unitId].tsx) -- heading and empty-state
+   wrapper, styled to the same token system as the dashboard and the
+   session leaf itself. */
+
+.page {
+  padding: 2.5rem 1.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.pageHeading {
+  margin-bottom: 1.5rem;
+}
+
+.emptyLeaf {
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--paper-dim);
+  border: 1px solid rgba(184, 147, 74, 0.4); /* var(--gold) at reduced opacity */
+  border-radius: 6px;
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+}
+
+.emptyMessage {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+}
+
+.backLink {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--rubric);
+  border: 1px solid var(--rubric);
+  border-radius: 4px;
+  padding: 0.6rem 1.5rem;
+  min-height: 44px;
+}
