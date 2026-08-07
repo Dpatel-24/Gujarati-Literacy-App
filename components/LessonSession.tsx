@@ -5,12 +5,13 @@ import styles from '@/styles/LessonSession.module.css';
 
 export type { ContentItem };
 
+export type LessonSessionMode = 'study' | 'quiz';
+
 export interface LessonSessionProps {
   items: ContentItem[];
+  mode: LessonSessionMode;
   onComplete: () => void;
 }
-
-type Phase = 'flashcard' | 'quiz';
 
 /**
  * Short interlinear-gloss label for one grapheme cluster's breakdown,
@@ -33,18 +34,25 @@ function annotationFor(d: DecomposeResult): string {
 }
 
 /**
- * Walks through `items` one at a time: flashcard (reveal phonetic +
- * meaning, optional letter breakdown for words/sentences) then a
- * multiple-choice quiz on the same item, recording the attempt via
- * /api/record-attempt. Advances to the next item on "Next"; calls
- * onComplete() after the last one.
+ * Walks through `items` one at a time in one of two independent modes:
+ *
+ *   - 'study': flashcard only. Reveal shows phonetic/meaning/letter
+ *     breakdown; "Next" advances. No quiz -- this is for learning an
+ *     item, not testing recall of something just shown.
+ *   - 'quiz': multiple-choice only, no flashcard reveal first. Each
+ *     item goes straight to a question (generateMultipleChoice),
+ *     records the attempt via /api/record-attempt, then "Next".
+ *
+ * The two modes are intentionally not chained -- quizzing immediately
+ * after revealing the same item's answer defeats the point of the
+ * quiz, so callers pick one mode per session rather than getting both
+ * back-to-back per item.
  *
  * Purely a queue walker — does not fetch or choose which items to
  * study. Callers decide that and pass the resulting array in.
  */
-export default function LessonSession({ items, onComplete }: LessonSessionProps) {
+export default function LessonSession({ items, mode, onComplete }: LessonSessionProps) {
   const [index, setIndex] = useState(0);
-  const [phase, setPhase] = useState<Phase>('flashcard');
   const [revealed, setRevealed] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [quiz, setQuiz] = useState<MultipleChoiceQuestion | null>(null);
@@ -53,15 +61,24 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
 
   const currentItem = items[index];
 
-  // Reset per-item UI state every time we move to a new item.
+  // Reset per-item UI state every time we move to a new item (or mode
+  // changes, though a single session never switches mode mid-way in
+  // practice). Quiz mode generates its question immediately here,
+  // rather than waiting for a "continue" action, since there's no
+  // flashcard step in front of it.
   useEffect(() => {
-    setPhase('flashcard');
     setRevealed(false);
     setShowBreakdown(false);
-    setQuiz(null);
     setSelectedOption(null);
     setRecordError(null);
-  }, [index]);
+
+    if (mode === 'quiz' && items[index]) {
+      setQuiz(generateMultipleChoice(items[index], items));
+    } else {
+      setQuiz(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, mode]);
 
   if (items.length === 0) {
     return (
@@ -84,12 +101,6 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
 
   const showsBreakdown = currentItem.item_type === 'word' || currentItem.item_type === 'sentence';
   const quizPrompt = currentItem.item_type === 'letter' ? 'What does this say?' : 'What does this mean?';
-
-  function handleContinueToQuiz() {
-    const mc = generateMultipleChoice(currentItem, items);
-    setQuiz(mc);
-    setPhase('quiz');
-  }
 
   async function handleSelectOption(option: string) {
     if (selectedOption || !quiz) return; // already answered this question
@@ -128,8 +139,8 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
         Leaf {index + 1} of {items.length}
       </p>
 
-      {phase === 'flashcard' && (
-        <div key={`flashcard-${index}`} className={styles.fadeIn}>
+      {mode === 'study' && (
+        <div key={`study-${index}`} className={styles.fadeIn}>
           <div className={styles.heroWrap}>
             {showBreakdown && showsBreakdown ? (
               <div className={styles.heroInterlinear}>
@@ -167,8 +178,8 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
               )}
 
               <div className={styles.actionRow}>
-                <button onClick={handleContinueToQuiz} className={styles.primaryButton}>
-                  Continue to quiz
+                <button onClick={handleNext} className={styles.primaryButton}>
+                  Next
                 </button>
               </div>
             </div>
@@ -176,7 +187,7 @@ export default function LessonSession({ items, onComplete }: LessonSessionProps)
         </div>
       )}
 
-      {phase === 'quiz' && quiz && (
+      {mode === 'quiz' && quiz && (
         <div key={`quiz-${index}`} className={styles.fadeIn}>
           <div className={styles.quizHeroWrap}>
             <div className={styles.quizHero}>{currentItem.gujarati_text}</div>

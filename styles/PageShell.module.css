@@ -41,3 +41,76 @@
   padding: 0.6rem 1.5rem;
   min-height: 44px;
 }
+
+/* Mode picker -- shown before a session starts, letting the caller
+   choose 'study' or 'quiz' as two independent entry points rather
+   than always chaining flashcard -> quiz per item. */
+.modeLeaf {
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--paper-dim);
+  border: 1px solid rgba(184, 147, 74, 0.4); /* var(--gold) at reduced opacity */
+  border-radius: 6px;
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+}
+
+.modeTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.modeMeta {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--ink);
+  opacity: 0.7;
+  margin-bottom: 1.75rem;
+}
+
+.modeButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.modeButton {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--rubric);
+  background: transparent;
+  border: 1px solid var(--rubric);
+  border-radius: 4px;
+  padding: 0.75rem 1.75rem;
+  min-height: 44px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.modeButton:hover {
+  box-shadow: 0 2px 6px rgba(154, 51, 36, 0.25);
+  transform: translateY(-1px);
+}
+
+.modeButton:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Quiz is the "testing yourself" action -- give it a filled peacock
+   treatment (reused from the correct-answer color elsewhere) so it
+   reads as visually distinct from Study rather than a same-weight
+   twin button. */
+.modeButtonQuiz {
+  background: var(--peacock);
+  border-color: var(--peacock);
+  color: var(--paper);
+}
+
+.modeButtonQuiz:hover {
+  box-shadow: 0 2px 6px rgba(31, 92, 86, 0.35);
+}

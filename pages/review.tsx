@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { GetServerSideProps } from 'next';
 import { query } from '@/lib/db';
-import LessonSession, { type ContentItem } from '@/components/LessonSession';
+import LessonSession, { type ContentItem, type LessonSessionMode } from '@/components/LessonSession';
 import styles from '@/styles/PageShell.module.css';
 
 const SESSION_SIZE_CAP = 20;
@@ -28,6 +29,7 @@ export const getServerSideProps: GetServerSideProps<ReviewPageProps> = async () 
 
 export default function ReviewPage({ items }: ReviewPageProps) {
   const router = useRouter();
+  const [mode, setMode] = useState<LessonSessionMode | null>(null);
 
   function handleComplete() {
     router.push('/');
@@ -49,8 +51,26 @@ export default function ReviewPage({ items }: ReviewPageProps) {
               </Link>
             </div>
           </div>
+        ) : mode === null ? (
+          <div>
+            <h1 className={`text-page-heading ${styles.pageHeading}`}>Review</h1>
+            <div className={styles.modeLeaf}>
+              <div className={styles.modeTitle}>Due for review</div>
+              <div className={styles.modeMeta}>
+                {items.length} item{items.length === 1 ? '' : 's'} due
+              </div>
+              <div className={styles.modeButtons}>
+                <button onClick={() => setMode('study')} className={styles.modeButton}>
+                  Study
+                </button>
+                <button onClick={() => setMode('quiz')} className={`${styles.modeButton} ${styles.modeButtonQuiz}`}>
+                  Quiz me
+                </button>
+              </div>
+            </div>
+          </div>
         ) : (
-          <LessonSession items={items} onComplete={handleComplete} />
+          <LessonSession items={items} mode={mode} onComplete={handleComplete} />
         )}
       </main>
     </>
