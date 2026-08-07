@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import { Noto_Serif_Gujarati, Fraunces, Karla, Noto_Sans_Gujarati } from 'next/font/google';
+import Layout from '@/components/Layout';
 import '../styles/globals.css';
 
 // next/font can't be used in _document, so it's loaded here instead
@@ -48,7 +49,9 @@ const fontVariables = [
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={`${fontVariables} app-shell`}>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </div>
   );
 }

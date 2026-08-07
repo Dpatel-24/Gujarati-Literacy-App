@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import styles from '@/styles/AdminForm.module.css';
 
 interface VocabCandidate {
   id: string;
@@ -91,59 +92,53 @@ export default function ReviewVocab() {
   }
 
   return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem', maxWidth: 1000, color: '#111' }}>
-      <h1>Review Vocabulary</h1>
-      <p>Draft words extracted from source texts. Approve promotes a word into content_items.</p>
+    <main className={styles.page}>
+      <h1 className={styles.heading}>Review Vocabulary</h1>
+      <p className={styles.subheading}>
+        Draft words extracted from source texts. Approve promotes a word into content_items; reject discards
+        it.
+      </p>
 
-      {listError && <p style={{ color: 'crimson' }}>{listError}</p>}
-      {actionError && <p style={{ color: 'crimson' }}>{actionError}</p>}
+      {listError && <p className={styles.errorText}>{listError}</p>}
+      {actionError && <p className={styles.errorText}>{actionError}</p>}
       {lastApproved && (
-        <p style={{ color: 'green' }}>
+        <p className={styles.successText}>
           Approved &quot;{lastApproved.word}&quot; into unit &quot;{lastApproved.unitName}&quot;.
         </p>
       )}
 
-      {!rows && !listError && <p>Loading…</p>}
-      {rows && rows.length === 0 && <p>No draft candidates left to review.</p>}
+      {!rows && !listError && <p className={styles.subheading}>Loading…</p>}
+      {rows && rows.length === 0 && <p className={styles.emptyText}>No draft candidates left to review.</p>}
 
       {rows && rows.length > 0 && (
-        <table style={{ borderCollapse: 'collapse', width: '100%', background: '#fff' }}>
-          <thead>
-            <tr>
-              <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Gujarati</th>
-              <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Phonetic</th>
-              <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Freq</th>
-              <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Gloss (draft)</th>
-              <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td style={{ border: '1px solid #ccc', padding: '0.4rem', fontSize: '1.1rem' }}>{r.word_gujarati}</td>
-                <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{r.word_phonetic}</td>
-                <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{r.frequency_count}</td>
-                <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{r.gloss_draft ?? '—'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>
-                  <button
-                    onClick={() => handleApprove(r.id, r.word_gujarati)}
-                    disabled={busyId === r.id}
-                    style={{ marginRight: '0.5rem', padding: '0.3rem 0.8rem' }}
-                  >
-                    {busyId === r.id ? 'Working…' : 'Approve'}
-                  </button>
-                  <button
-                    onClick={() => handleReject(r.id)}
-                    disabled={busyId === r.id}
-                    style={{ padding: '0.3rem 0.8rem' }}
-                  >
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className={styles.candidateList}>
+          {rows.map((r) => (
+            <div key={r.id} className={styles.candidateRow}>
+              <div className={styles.candidateMain}>
+                <span className={styles.candidateGujarati}>{r.word_gujarati}</span>
+                <span className={styles.candidatePhonetic}>{r.word_phonetic}</span>
+                <span className={styles.candidateGloss}>{r.gloss_draft ?? '—'}</span>
+                <span className={styles.candidateFreq}>×{r.frequency_count}</span>
+              </div>
+              <div className={styles.candidateActions}>
+                <button
+                  onClick={() => handleApprove(r.id, r.word_gujarati)}
+                  disabled={busyId === r.id}
+                  className={styles.approveButton}
+                >
+                  {busyId === r.id ? 'Working…' : 'Approve'}
+                </button>
+                <button
+                  onClick={() => handleReject(r.id)}
+                  disabled={busyId === r.id}
+                  className={styles.rejectButton}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </main>
   );

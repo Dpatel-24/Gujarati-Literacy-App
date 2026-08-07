@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import styles from '@/styles/AdminForm.module.css';
 
 interface SuccessResult {
   id: string;
@@ -114,12 +115,16 @@ export default function ImportText() {
   }
 
   return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem', maxWidth: 900 }}>
-      <h1>Import Source Text</h1>
+    <main className={styles.page}>
+      <h1 className={styles.heading}>Import Source Text</h1>
+      <p className={styles.subheading}>
+        Paste Gujarati text and its phonetic transliteration, one line per stanza/line, in the same order on
+        both sides.
+      </p>
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="title" style={{ display: 'block', fontWeight: 'bold' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="title" className={styles.label}>
             Title
           </label>
           <input
@@ -128,12 +133,12 @@ export default function ImportText() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            style={{ width: '100%', padding: '0.5rem', fontSize: '1rem' }}
+            className={styles.input}
           />
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="gujarati" style={{ display: 'block', fontWeight: 'bold' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="gujarati" className={styles.label}>
             Gujarati text (one line per stanza/line)
           </label>
           <textarea
@@ -142,12 +147,12 @@ export default function ImportText() {
             onChange={(e) => setGujaratiText(e.target.value)}
             required
             rows={16}
-            style={{ width: '100%', padding: '0.5rem', fontSize: '1.1rem' }}
+            className={styles.textarea}
           />
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="phonetic" style={{ display: 'block', fontWeight: 'bold' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="phonetic" className={styles.label}>
             Phonetic text (same line order as Gujarati above)
           </label>
           <textarea
@@ -156,50 +161,42 @@ export default function ImportText() {
             onChange={(e) => setPhoneticText(e.target.value)}
             required
             rows={16}
-            style={{ width: '100%', padding: '0.5rem', fontSize: '1.1rem' }}
+            className={styles.textarea}
           />
         </div>
 
-        <button type="submit" disabled={submitting} style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>
+        <button type="submit" disabled={submitting} className={styles.primaryButton}>
           {submitting ? 'Submitting...' : 'Submit'}
         </button>
       </form>
 
-      {error && (
-        <p style={{ color: 'crimson', marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{error}</p>
-      )}
+      {error && <p className={styles.errorText}>{error}</p>}
 
       {result && (
-        <div style={{ marginTop: '1rem' }}>
-          <p style={{ color: 'green' }}>
+        <div className={styles.resultBlock}>
+          <p className={styles.successText}>
             Saved. source_texts.id = <code>{result.id}</code>, stanza count = {result.stanzaCount}
           </p>
-          <button
-            onClick={handleExtractVocab}
-            disabled={extracting}
-            style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}
-          >
+          <button onClick={handleExtractVocab} disabled={extracting} className={styles.secondaryButton}>
             {extracting ? 'Extracting vocabulary...' : 'Extract vocabulary now'}
           </button>
         </div>
       )}
 
-      {extractError && (
-        <p style={{ color: 'crimson', marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{extractError}</p>
-      )}
+      {extractError && <p className={styles.errorText}>{extractError}</p>}
 
       {extractResult && (
-        <div style={{ marginTop: '1rem' }}>
-          <p style={{ color: 'green' }}>
+        <div className={styles.resultBlock}>
+          <p className={styles.successText}>
             Extracted. {extractResult.newWordsInserted} new word(s) inserted,{' '}
             {extractResult.existingWordsBumped} existing draft(s) bumped,{' '}
             {extractResult.skippedLines.length} line(s) skipped.
           </p>
 
           {extractResult.skippedLines.length > 0 && (
-            <div style={{ marginBottom: '1rem' }}>
+            <div>
               <strong>Skipped lines:</strong>
-              <ul>
+              <ul className={styles.skippedList}>
                 {extractResult.skippedLines.map((s, i) => (
                   <li key={i}>
                     Line {s.lineIndex}: {s.reason} — &quot;{s.gujarati}&quot; / &quot;{s.phonetic}&quot;
@@ -209,24 +206,24 @@ export default function ImportText() {
             </div>
           )}
 
-          <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <table className={styles.table}>
             <thead>
               <tr>
-                <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Gujarati</th>
-                <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Phonetic</th>
-                <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Frequency</th>
-                <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>Gloss</th>
-                <th style={{ border: '1px solid #ccc', padding: '0.4rem', textAlign: 'left' }}>New?</th>
+                <th>Gujarati</th>
+                <th>Phonetic</th>
+                <th>Frequency</th>
+                <th>Gloss</th>
+                <th>New?</th>
               </tr>
             </thead>
             <tbody>
               {extractResult.words.map((w, i) => (
                 <tr key={i}>
-                  <td style={{ border: '1px solid #ccc', padding: '0.4rem', fontSize: '1.1rem' }}>{w.gujarati}</td>
-                  <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{w.phonetic}</td>
-                  <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{w.frequency}</td>
-                  <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{w.gloss ?? '(unchanged)'}</td>
-                  <td style={{ border: '1px solid #ccc', padding: '0.4rem' }}>{w.wasNew ? 'yes' : 'no'}</td>
+                  <td className={styles.gujaratiCell}>{w.gujarati}</td>
+                  <td>{w.phonetic}</td>
+                  <td>{w.frequency}</td>
+                  <td>{w.gloss ?? '(unchanged)'}</td>
+                  <td>{w.wasNew ? 'yes' : 'no'}</td>
                 </tr>
               ))}
             </tbody>

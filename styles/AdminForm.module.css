@@ -1,0 +1,283 @@
+/* Shared visual baseline for admin tool pages -- same token system as
+   the rest of the app, but plain: no ornamental marks, no dotted
+   leaders, no rubrication. Just consistent color/type/spacing. */
+
+.page {
+  padding: 2.5rem 1.5rem 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100%;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 2rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.subheading {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  opacity: 0.75;
+  margin-bottom: 2rem;
+  max-width: 65ch;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 0.65rem 0.8rem;
+}
+
+.textarea {
+  font-family: var(--font-gujarati-body), var(--font-body);
+  resize: vertical;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: 2px solid var(--rubric);
+  outline-offset: 1px;
+}
+
+/* Primary action -- submit / extract / import. Solid rubric, the
+   accent reserved for primary actions across the app. */
+.primaryButton {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--paper);
+  background: var(--rubric);
+  border: 1px solid var(--rubric);
+  border-radius: 4px;
+  padding: 0.7rem 1.5rem;
+  min-height: 44px;
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+}
+
+/* Secondary action -- e.g. 'Extract vocabulary now' after a save,
+   understated outline rather than a second competing solid fill. */
+.secondaryButton {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--rubric);
+  background: transparent;
+  border: 1px solid var(--rubric);
+  border-radius: 4px;
+  padding: 0.7rem 1.5rem;
+  min-height: 44px;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.6;
+}
+
+.errorText {
+  font-family: var(--font-body);
+  color: var(--rubric);
+  margin-top: 1rem;
+  white-space: pre-wrap;
+}
+
+.successText {
+  font-family: var(--font-body);
+  color: var(--peacock);
+  margin-top: 1rem;
+}
+
+.resultBlock {
+  margin-top: 1.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table th {
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--ink);
+  opacity: 0.7;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--gold);
+}
+
+.table td {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(184, 147, 74, 0.25); /* hairline var(--gold), low opacity */
+}
+
+.gujaratiCell {
+  font-family: var(--font-gujarati-body);
+  font-size: 1.1rem;
+}
+
+.skippedList {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin: 0.5rem 0 1rem 1.25rem;
+}
+
+/* ---------- Review-vocab rows ---------- */
+
+.candidateList {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0.25rem;
+  border-bottom: 1px solid rgba(184, 147, 74, 0.35); /* hairline var(--gold) */
+}
+
+.candidateRow:last-child {
+  border-bottom: none;
+}
+
+.candidateMain {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.candidateGujarati {
+  font-family: var(--font-gujarati-body);
+  font-size: 1.3rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.candidatePhonetic {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink);
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.candidateGloss {
+  font-family: var(--font-body);
+  color: var(--ink);
+  opacity: 0.85;
+}
+
+.candidateFreq {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--ink);
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.candidateActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Approve -- peacock, a positive/confirming action. */
+.approveButton {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--paper);
+  background: var(--peacock);
+  border: 1px solid var(--peacock);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  min-height: 40px;
+}
+
+/* Reject -- deliberately muted/neutral, not rubric, so it doesn't
+   visually compete with Approve or with rubric's role as the primary
+   accent elsewhere. */
+.rejectButton {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--ink);
+  opacity: 0.7;
+  background: transparent;
+  border: 1px solid rgba(42, 36, 32, 0.35); /* var(--ink) at reduced opacity */
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  min-height: 40px;
+}
+
+.approveButton:disabled,
+.rejectButton:disabled {
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-family: var(--font-heading);
+  font-style: italic;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .candidateRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .candidateActions {
+    justify-content: flex-end;
+  }
+}
