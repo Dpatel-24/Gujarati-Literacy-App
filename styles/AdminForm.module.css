@@ -281,3 +281,114 @@
     justify-content: flex-end;
   }
 }
+
+/* ---------- Inline forms (e.g. Create group) ---------- */
+
+.inlineForm {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inlineForm .input {
+  width: auto;
+  flex: 1 1 260px;
+}
+
+/* ---------- Select dropdown, matches .input's treatment ---------- */
+
+.select {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 0.55rem 0.6rem;
+  min-height: 40px;
+}
+
+.select:focus {
+  outline: 2px solid var(--rubric);
+  outline-offset: 1px;
+}
+
+/* ---------- Vocab groups ---------- */
+
+.groupList {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0.25rem;
+  border-bottom: 1px solid rgba(184, 147, 74, 0.35); /* hairline var(--gold) */
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.groupRow:last-child {
+  border-bottom: none;
+}
+
+.groupRow:hover {
+  background: var(--paper-dim);
+}
+
+.groupName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.groupCount {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--ink);
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+.groupDetail {
+  padding: 0.5rem 0.25rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(184, 147, 74, 0.35);
+}
+
+.groupDetail:last-child {
+  border-bottom: none;
+}
+
+.groupItemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0;
+}
+
+.groupItemMain {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.groupItemActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
