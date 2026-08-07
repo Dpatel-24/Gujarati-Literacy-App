@@ -1,13 +1,30 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Palette */
+  --paper: #E8E1CC;
+  --paper-dim: #DCD3B8;
+  --ink: #2A2420;
+  --rubric: #9A3324;
+  --peacock: #1F5C56;
+  --gold: #B8934A;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Fonts. The --font-* variables here come from next/font/google,
+     applied via .app-shell in _app.tsx (next/font can't be used in
+     _document, so they aren't available at plain :root/body scope --
+     only within .app-shell and its descendants, which is everything a
+     page actually renders). Each stacks a generic fallback in case a
+     font fails to load. */
+  --font-display: var(--font-noto-serif-gujarati), 'Noto Serif', serif;
+  --font-heading: var(--font-fraunces), Georgia, serif;
+  --font-body: var(--font-karla), system-ui, sans-serif;
+  --font-gujarati-body: var(--font-noto-sans-gujarati), 'Noto Sans', sans-serif;
+
+  /* Type scale. Sizes only -- font-family and weight are applied via
+     the .text-* utility classes below, since "display" in particular
+     needs a different family (Gujarati serif) than the rest. */
+  --text-display: 4rem;
+  --text-heading: 1.75rem;
+  --text-body: 1rem;
+  --text-small: 0.85rem;
 }
 
 html,
@@ -17,11 +34,19 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Wrapper applied in _app.tsx, immediately inside <body> -- carries
+   the next/font variables and is what actually establishes the
+   default body text font/size for everything a page renders. */
+.app-shell {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
 }
 
 * {
@@ -35,8 +60,50 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Type scale utility classes */
+
+.text-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  line-height: 1.1;
+}
+
+.text-heading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--text-heading);
+  line-height: 1.25;
+}
+
+.text-body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+}
+
+.text-small {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+}
+
+/* Keyboard focus. Never remove an outline without replacing it --
+   this is the replacement, visible in both mouse and keyboard use
+   since we don't scope it to :focus-visible-only exclusions. */
+:focus {
+  outline: 2px solid var(--rubric);
+  outline-offset: 2px;
+}
+
+/* Reduced motion: any transition/animation elsewhere in the app must
+   be written normally and will be neutralized here for users who have
+   asked the OS for reduced motion, rather than requiring every
+   component to remember to guard its own animation code. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
