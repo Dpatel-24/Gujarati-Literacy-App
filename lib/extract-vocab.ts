@@ -231,6 +231,10 @@ export async function extractVocab(sourceTextId: string): Promise<ExtractVocabRe
     });
   }
 
+  // Mark this source text as extracted so the admin UI can distinguish
+  // "not yet processed" from "processed, nothing new came out of it".
+  await query(`update source_texts set extracted_at = now() where id = $1`, [sourceTextId]);
+
   return {
     sourceTextId,
     skippedLines,
