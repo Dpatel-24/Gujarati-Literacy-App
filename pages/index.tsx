@@ -42,9 +42,9 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
       group by cu.id, cu.name, cu.unit_type, cu.sort_order
       order by cu.sort_order
     `),
-    // Up to 2 sample glyphs per unit, as a quiet visual identifier on
-    // its leaf -- earliest-added approved items, not random, so the
-    // sample is stable between page loads.
+    // Up to 2 sample glyphs per unit, as a quiet visual identifier --
+    // earliest-added approved items, not random, so the sample is
+    // stable between page loads.
     query(`
       select unit_id, gujarati_text from (
         select ci.unit_id, ci.gujarati_text,
@@ -84,55 +84,79 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
 };
 
 export default function Home({ units }: HomeProps) {
+  // Letters is front matter -- the foundational chapter, rendered as
+  // its own larger block. Everything else (unit_type 'words', one per
+  // imported source text) forms the table-of-contents index below it.
+  const lettersUnit = units.find((u) => u.unitType === 'letters') ?? null;
+  const wordChapters = units.filter((u) => u.unitType !== 'letters');
+
   return (
     <>
       <Head>
-        <title>Gujarati Literacy App</title>
+        <title>Gujarati Literacy</title>
         <meta name="description" content="Personal Gujarati literacy app" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={styles.page}>
-        <h1 className={`text-page-heading ${styles.pageHeading}`}>Chapters</h1>
+        <div className={styles.hero}>
+          <div className={styles.ornament}>ૐ</div>
+          <div className={styles.eyebrow}>Gujarati reading practice</div>
+          <h1 className={styles.title}>Gujarati Literacy</h1>
+        </div>
+        <hr className={styles.headerRule} />
 
-        <Link href="/review" className={styles.reviewLink}>
+        {lettersUnit && (
+          <div className={styles.lettersSection}>
+            <div className={styles.lettersBlock}>
+              <div className={styles.lettersMain}>
+                <span className={styles.lettersName}>{lettersUnit.name}</span>
+                {lettersUnit.sampleGlyphs.length > 0 && (
+                  <span className={styles.lettersSample}>{lettersUnit.sampleGlyphs.join(' ')}</span>
+                )}
+              </div>
+
+              <div>
+                <div className={styles.lettersStats}>
+                  <div className={styles.barTrack}>
+                    <div className={styles.barFill} style={{ width: `${lettersUnit.proficiencyPercent}%` }} />
+                  </div>
+                  <span className={`text-small ${styles.barLabel}`}>{lettersUnit.proficiencyPercent}% proficient</span>
+                </div>
+                <span className={`text-small ${styles.metaText}`}>
+                  {lettersUnit.dueCount} due · {lettersUnit.newCount} new
+                </span>
+              </div>
+
+              <Link href={`/lesson/${lettersUnit.unitId}`} className={styles.lettersStart}>
+                Start
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <Link href="/review" className={styles.reviewCta}>
           Review due items
         </Link>
 
-        {units.length === 0 && <p className={`text-body ${styles.emptyState}`}>No chapters yet.</p>}
+        <div>
+          <div className={styles.indexHeading}>Texts</div>
 
-        {units.length > 0 && (
-          <div className={styles.leafList}>
-            {units.map((unit) => (
-              <div key={unit.unitId} className={styles.leaf}>
-                <div className={styles.leafMain}>
-                  <span className={`text-heading ${styles.leafName}`}>{unit.name}</span>
-                  {unit.sampleGlyphs.length > 0 && (
-                    <span className={styles.leafSample}>{unit.sampleGlyphs.join(' ')}</span>
-                  )}
-                </div>
-
-                <div>
-                  <div className={styles.leafStats}>
-                    <div className={styles.barTrack}>
-                      <div className={styles.barFill} style={{ width: `${unit.proficiencyPercent}%` }} />
-                    </div>
-                    <span className={`text-small ${styles.barLabel}`}>{unit.proficiencyPercent}% proficient</span>
-                  </div>
-                  <div className={styles.leafStats}>
-                    <span className={`text-small ${styles.metaText}`}>
-                      {unit.totalItems} item{unit.totalItems === 1 ? '' : 's'} · {unit.dueCount} due ·{' '}
-                      {unit.newCount} new
-                    </span>
-                  </div>
-                </div>
-
-                <Link href={`/lesson/${unit.unitId}`} className={`text-body ${styles.startButton}`}>
-                  Start
+          {wordChapters.length === 0 ? (
+            <p className={styles.indexEmpty}>No texts imported yet.</p>
+          ) : (
+            <div className={styles.indexList}>
+              {wordChapters.map((unit) => (
+                <Link key={unit.unitId} href={`/lesson/${unit.unitId}`} className={styles.indexRow}>
+                  <span className={styles.indexName}>{unit.name}</span>
+                  <span className={styles.indexLeader} />
+                  <span className={styles.indexStats}>
+                    {unit.proficiencyPercent}% · {unit.dueCount} due · {unit.newCount} new
+                  </span>
                 </Link>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </>
   );

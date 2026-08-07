@@ -1,87 +1,112 @@
 .page {
-  padding: 2.5rem 1.5rem;
+  padding: 3rem 1.5rem 4rem;
   max-width: 700px;
   margin: 0 auto;
 }
 
-.pageHeading {
-  margin-bottom: 1.5rem;
+/* ---------- Hero header / title page ---------- */
+
+.hero {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-/* "Review due items" -- a distinct entry point, not a leaf in the
-   chapter list. Solid peacock fill sets it apart from the rubric
-   accent reserved for per-chapter Start actions, without introducing
-   a new color to the system. */
-.reviewLink {
-  display: inline-block;
-  background: var(--peacock);
+.ornament {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--rubric);
+  margin-bottom: 0.75rem;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.6rem;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 3rem;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.headerRule {
+  border: none;
+  border-top: 1px solid var(--gold);
+  margin: 2rem 0;
+}
+
+/* ---------- Review CTA ---------- */
+
+.reviewCta {
+  display: block;
+  text-align: center;
+  background: var(--rubric);
   color: var(--paper);
   font-family: var(--font-heading);
   font-weight: 600;
-  padding: 0.85rem 1.5rem;
+  font-size: 1.15rem;
+  padding: 1rem 1.5rem;
   border-radius: 4px;
   margin-bottom: 2.5rem;
 }
 
-.chaptersHeading {
-  margin-bottom: 1rem;
-  color: var(--ink);
-  opacity: 0.75;
+/* ---------- Letters front-matter block ---------- */
+
+.lettersSection {
+  margin-bottom: 2.5rem;
 }
 
-.emptyState {
-  font-family: var(--font-body);
-}
-
-.leafList {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Each chapter as a manuscript "leaf": restrained radius, border-only
-   (no shadow), generous internal padding. */
-.leaf {
+.lettersBlock {
   background: var(--paper-dim);
   border: 1px solid rgba(184, 147, 74, 0.4); /* var(--gold) at reduced opacity */
   border-radius: 6px;
-  padding: 1.5rem;
+  padding: 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
 }
 
-.leafMain {
+.lettersMain {
   display: flex;
   align-items: baseline;
-  gap: 0.85rem;
+  gap: 1rem;
   min-width: 0;
 }
 
-.leafName {
+.lettersName {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 2rem;
+  color: var(--ink);
   white-space: nowrap;
 }
 
-/* Quiet visual identifier -- a sample glyph or two, not decoration
-   competing with the chapter name. */
-.leafSample {
+.lettersSample {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: var(--ink);
   opacity: 0.45;
   white-space: nowrap;
 }
 
-.leafStats {
-  margin-top: 0.6rem;
+.lettersStats {
+  margin-top: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
 .barTrack {
-  width: 90px;
+  width: 110px;
   height: 6px;
   background: var(--paper);
   border-radius: 3px;
@@ -104,14 +129,11 @@
   color: var(--ink);
   opacity: 0.65;
   white-space: nowrap;
+  display: block;
+  margin-top: 0.35rem;
 }
 
-/* Start: understated text/border action, rubric as the one warm
-   accent per leaf. Hover/focus get a slight lift -- the only
-   shadow-like elevation on the page, and only on interaction.
-   Transition duration is neutralized globally for
-   prefers-reduced-motion, so no extra guard needed here. */
-.startButton {
+.lettersStart {
   flex-shrink: 0;
   font-family: var(--font-body);
   font-weight: 600;
@@ -119,32 +141,128 @@
   background: transparent;
   border: 1px solid var(--rubric);
   border-radius: 4px;
-  padding: 0.6rem 1.25rem;
+  padding: 0.7rem 1.5rem;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.startButton:hover {
+.lettersStart:hover {
   box-shadow: 0 2px 6px rgba(154, 51, 36, 0.25);
   transform: translateY(-1px);
 }
 
-.startButton:active {
+.lettersStart:active {
   transform: translateY(0);
   box-shadow: none;
 }
 
-@media (max-width: 600px) {
-  .leaf {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+/* ---------- Word chapters index (table of contents) ---------- */
+
+.indexHeading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ink);
+  opacity: 0.75;
+  margin-bottom: 0.75rem;
+}
+
+.indexList {
+  display: flex;
+  flex-direction: column;
+}
+
+.indexRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.9rem 0.35rem;
+  border-bottom: 1px solid rgba(184, 147, 74, 0.25); /* hairline var(--gold), low opacity */
+  transition: background-color 0.15s ease;
+}
+
+.indexRow:last-child {
+  border-bottom: none;
+}
+
+.indexRow:hover {
+  background: var(--paper-dim);
+}
+
+.indexName {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--ink);
+  white-space: nowrap;
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indexLeader {
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 0;
+  align-self: center;
+  border-bottom: 2px dotted var(--gold);
+  opacity: 0.7;
+}
+
+.indexStats {
+  flex: 0 0 auto;
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--ink);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.indexEmpty {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink);
+  opacity: 0.7;
+  padding: 0.5rem 0.35rem;
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 2.25rem;
   }
 
-  .leafMain {
+  .lettersBlock {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .lettersMain {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .lettersStart {
+    text-align: center;
+  }
+
+  /* Dotted leaders don't survive wrapping gracefully -- below this
+     width, drop the leader and stack name above stats instead of
+     trying to keep everything on one line. */
+  .indexRow {
     flex-wrap: wrap;
   }
 
-  .startButton {
-    text-align: center;
+  .indexLeader {
+    display: none;
+  }
+
+  .indexName {
+    flex: 1 1 100%;
+    white-space: normal;
+  }
+
+  .indexStats {
+    flex: 1 1 100%;
   }
 }
