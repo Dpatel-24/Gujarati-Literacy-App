@@ -81,11 +81,43 @@ async function fetchDraftCandidateByWord(
   return rows[0] ?? null;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Parses a wait time out of Groq's 429 response. Groq sends a
+ * Retry-After header on some tiers; when it doesn't, the error body
+ * text usually says "Please try again in 1.234s" — pull that out too.
+ * Falls back to null if neither is present.
+ */
+function parseRetryAfterMs(res: Response, body: string): number | null {
+  const header = res.headers.get('retry-after');
+  if (header) {
+    const seconds = Number(header);
+    if (!Number.isNaN(seconds)) return seconds * 1000;
+  }
+  const match = body.match(/try again in ([\d.]+)s/i);
+  if (match) return Math.ceil(parseFloat(match[1]) * 1000);
+  return null;
+}
+
+// Small fixed pacing gap between consecutive Groq calls, independent of
+// retries, to spread requests out and reduce how often we hit the
+// tokens-per-minute cap in the first place.
+const GLOSS_CALL_SPACING_MS = 400;
+const MAX_RETRIES = 6;
+const MAX_SINGLE_WAIT_MS = 60_000; // don't wait longer than this for one retry
+
 /**
  * Generates a concise English gloss for a Gujarati word using Groq's
  * chat completions API. Only the gloss is requested — the Gujarati and
  * phonetic spellings we already have are gold-standard from the source
  * text and are never sent back for regeneration.
+ *
+ * Retries on 429 (rate limit) with the wait time Groq tells us to use,
+ * since the caller has said running slowly through a rate limit is
+ * fine — it should just not crash the whole extraction run.
  */
 async function generateGloss(gujaratiWord: string, phoneticWord: string, lineContext: string): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY;
@@ -104,31 +136,48 @@ async function generateGloss(gujaratiWord: string, phoneticWord: string, lineCon
     `Line context: ${lineContext}\n\n` +
     `Respond with ONLY the gloss (1-5 words), no punctuation, no explanation.`;
 
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: 'llama-3.1-8b-instant',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.2,
-      max_tokens: 20,
-    }),
-  });
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+        max_tokens: 20,
+      }),
+    });
 
-  if (!res.ok) {
+    if (res.ok) {
+      const data = await res.json();
+      const gloss = data?.choices?.[0]?.message?.content?.trim();
+      if (!gloss) {
+        throw new Error(`Groq API returned no gloss for word "${gujaratiWord}"`);
+      }
+      await sleep(GLOSS_CALL_SPACING_MS);
+      return gloss;
+    }
+
     const body = await res.text();
+
+    if (res.status === 429 && attempt < MAX_RETRIES) {
+      const waitMs = Math.min(parseRetryAfterMs(res, body) ?? 2000 * 2 ** attempt, MAX_SINGLE_WAIT_MS);
+      console.warn(
+        `[extractVocab] Rate limited on "${gujaratiWord}" (attempt ${attempt + 1}/${MAX_RETRIES}), ` +
+          `waiting ${waitMs}ms before retry.`,
+      );
+      await sleep(waitMs);
+      continue;
+    }
+
     throw new Error(`Groq API error (${res.status}): ${body}`);
   }
 
-  const data = await res.json();
-  const gloss = data?.choices?.[0]?.message?.content?.trim();
-  if (!gloss) {
-    throw new Error(`Groq API returned no gloss for word "${gujaratiWord}"`);
-  }
-  return gloss;
+  // Unreachable given the loop bounds above, but keeps TypeScript happy.
+  throw new Error(`Groq API: exhausted retries for word "${gujaratiWord}"`);
 }
 
 export async function extractVocab(sourceTextId: string): Promise<ExtractVocabResult> {

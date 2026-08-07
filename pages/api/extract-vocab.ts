@@ -1,6 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { extractVocab } from '@/lib/extract-vocab';
 
+// Rate-limit backoff can mean this run takes a while (each retry can
+// wait up to 60s). Give the function the most headroom Vercel's Hobby
+// tier allows so a slow-but-fine run doesn't get killed as a timeout.
+export const config = {
+  maxDuration: 60,
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
