@@ -15,16 +15,21 @@ interface VocabCandidate {
 
 /**
  * Admin page for reviewing draft vocab_candidates: approve promotes a
- * word into content_items (grouped into a content_units row named
- * after its source text, item_type 'words'), reject marks it rejected.
- * Both remove the row from this list immediately.
+ * word into an approved content_items row with no chapter yet
+ * (unit_id null -- chapter assignment happens in a separate screen).
+ * The word still carries source_text_id so where it came from isn't
+ * lost; that's just shown once here at approval time, not persisted
+ * as a chapter tag. Reject marks the candidate rejected. Both remove
+ * the row from this list immediately.
  */
 export default function ReviewVocab() {
   const [rows, setRows] = useState<VocabCandidate[] | null>(null);
   const [listError, setListError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [lastApproved, setLastApproved] = useState<{ word: string; unitName: string } | null>(null);
+  const [lastApproved, setLastApproved] = useState<{ word: string; sourceTextTitle: string | null } | null>(
+    null,
+  );
 
   async function loadRows() {
     setListError(null);
@@ -60,7 +65,7 @@ export default function ReviewVocab() {
         setActionError(data.error ?? 'Approve failed');
         return;
       }
-      setLastApproved({ word, unitName: data.unitName });
+      setLastApproved({ word, sourceTextTitle: data.sourceTextTitle });
       setRows((prev) => (prev ? prev.filter((r) => r.id !== id) : prev));
     } catch (err: any) {
       setActionError(err.message);
@@ -95,15 +100,17 @@ export default function ReviewVocab() {
     <main className={styles.page}>
       <h1 className={styles.heading}>Review Vocabulary</h1>
       <p className={styles.subheading}>
-        Draft words extracted from source texts. Approve promotes a word into content_items; reject discards
-        it.
+        Draft words extracted from source texts. Approve promotes a word into content_items with no chapter
+        assigned yet; reject discards it.
       </p>
 
       {listError && <p className={styles.errorText}>{listError}</p>}
       {actionError && <p className={styles.errorText}>{actionError}</p>}
       {lastApproved && (
         <p className={styles.successText}>
-          Approved &quot;{lastApproved.word}&quot; into unit &quot;{lastApproved.unitName}&quot;.
+          Approved &quot;{lastApproved.word}&quot;
+          {lastApproved.sourceTextTitle ? ` — from "${lastApproved.sourceTextTitle}"` : ''}. Unassigned to a
+          chapter for now.
         </p>
       )}
 

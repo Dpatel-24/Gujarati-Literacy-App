@@ -44,8 +44,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
        returning id`,
       [title, gujaratiRaw, phoneticRaw, JSON.stringify(stanzaPairs)],
     );
+    const sourceTextId = rows[0].id;
 
-    res.status(200).json({ id: rows[0].id, stanzaCount: stanzaPairs.length });
+    // Scaffold a placeholder content_units row for this text's future
+    // sentence-level content ('text' module). Stays empty of
+    // content_items for now -- populating it is a later step.
+    const { rows: maxSortRows } = await query(
+      `select coalesce(max(sort_order), -1) as max_sort from content_units where module = 'text'`,
+    );
+    const nextSortOrder = maxSortRows[0].max_sort + 1;
+
+    await query(
+      `insert into content_units (name, module, unit_type, sort_order, source_text_id)
+       values ($1, 'text', 'sentences', $2, $3)`,
+      [title, nextSortOrder, sourceTextId],
+    );
+
+    res.status(200).json({ id: sourceTextId, stanzaCount: stanzaPairs.length });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

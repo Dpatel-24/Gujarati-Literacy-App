@@ -2,30 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { query } from '@/lib/db';
 
 /**
- * Finds the content_units row named after the candidate's source text
- * (unit_type 'words'), creating it if it doesn't exist yet. Units are
- * grouped by source text title so words promoted from the same poem
- * end up in the same practice unit.
+ * Approves a draft vocab_candidate into an approved content_items row.
+ *
+ * unit_id is deliberately left null here -- chapter assignment used to
+ * happen automatically (a content_units row named after the source
+ * text, auto-created if needed), but that's been removed in favor of
+ * a dedicated assignment screen (a later step). The word still
+ * carries source_text_id, so where it came from isn't lost -- it's
+ * just not used to auto-place it into a chapter anymore.
  */
-async function findOrCreateWordsUnit(sourceTextTitle: string): Promise<string> {
-  const { rows: existing } = await query(
-    `select id from content_units where name = $1 and unit_type = 'words' limit 1`,
-    [sourceTextTitle],
-  );
-  if (existing.length > 0) {
-    return existing[0].id;
-  }
-
-  const { rows: maxSort } = await query(`select coalesce(max(sort_order), -1) as max_sort from content_units`);
-  const nextSortOrder = maxSort[0].max_sort + 1;
-
-  const { rows: created } = await query(
-    `insert into content_units (name, unit_type, sort_order) values ($1, 'words', $2) returning id`,
-    [sourceTextTitle, nextSortOrder],
-  );
-  return created[0].id;
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -53,27 +38,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const sourceTextIds: string[] = candidate.source_text_ids ?? [];
-    if (sourceTextIds.length === 0) {
-      return res.status(400).json({ error: 'Candidate has no source_text_ids to derive a unit from' });
-    }
-    const firstSourceTextId = sourceTextIds[0];
+    const firstSourceTextId = sourceTextIds[0] ?? null;
 
-    const { rows: sourceTextRows } = await query(`select id, title from source_texts where id = $1`, [
-      firstSourceTextId,
-    ]);
-    if (sourceTextRows.length === 0) {
-      return res.status(400).json({ error: `source_texts row not found for id ${firstSourceTextId}` });
+    // Source text title is purely informational here (for the
+    // approve confirmation message) -- not used to place the item
+    // into a unit any more.
+    let sourceTextTitle: string | null = null;
+    if (firstSourceTextId) {
+      const { rows: sourceTextRows } = await query(`select title from source_texts where id = $1`, [
+        firstSourceTextId,
+      ]);
+      sourceTextTitle = sourceTextRows[0]?.title ?? null;
     }
-    const sourceTextTitle = sourceTextRows[0].title;
-
-    const unitId = await findOrCreateWordsUnit(sourceTextTitle);
 
     const { rows: itemRows } = await query(
       `insert into content_items
          (unit_id, item_type, gujarati_text, phonetic_text, meaning, status, source_text_id)
-       values ($1, 'word', $2, $3, $4, 'approved', $5)
+       values (null, 'word', $1, $2, $3, 'approved', $4)
        returning id`,
-      [unitId, candidate.word_gujarati, candidate.word_phonetic, candidate.gloss_draft, firstSourceTextId],
+      [candidate.word_gujarati, candidate.word_phonetic, candidate.gloss_draft, firstSourceTextId],
     );
     const contentItemId = itemRows[0].id;
 
@@ -82,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       [contentItemId, id],
     );
 
-    res.status(200).json({ contentItemId, unitId, unitName: sourceTextTitle });
+    res.status(200).json({ contentItemId, unitId: null, sourceTextTitle });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
