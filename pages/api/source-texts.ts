@@ -7,23 +7,9 @@ interface StanzaPair {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
-    try {
-      const { rows } = await query(
-        `select id, title, jsonb_array_length(stanza_pairs) as stanza_count,
-                created_at, extracted_at
-         from source_texts
-         order by created_at desc`,
-      );
-      return res.status(200).json(rows);
-    } catch (err: any) {
-      return res.status(500).json({ error: err.message });
-    }
-  }
-
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'GET, POST');
-    return res.status(405).json({ error: 'Use GET or POST' });
+    res.setHeader('Allow', 'POST');
+    return res.status(405).json({ error: 'Use POST' });
   }
 
   const { title, gujaratiRaw, phoneticRaw, stanzaPairs } = req.body as {

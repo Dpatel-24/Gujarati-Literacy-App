@@ -19,11 +19,8 @@
   --font-gujarati-body: var(--font-noto-sans-gujarati), 'Noto Sans', sans-serif;
 
   /* Type scale. Sizes only -- font-family and weight are applied via
-     the .text-* utility classes below, since "display" in particular
-     needs a different family (Gujarati serif) than the rest. */
-  --text-display: 4rem;
+     the .text-* utility classes below. */
   --text-page-heading: 2.5rem;
-  --text-heading: 1.75rem;
   --text-body: 1rem;
   --text-small: 0.85rem;
 }
@@ -63,29 +60,11 @@ a {
 
 /* Type scale utility classes */
 
-.text-display {
-  font-family: var(--font-display);
-  font-size: var(--text-display);
-  line-height: 1.1;
-}
-
 .text-page-heading {
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: var(--text-page-heading);
   line-height: 1.15;
-}
-
-.text-heading {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: var(--text-heading);
-  line-height: 1.25;
-}
-
-.text-body {
-  font-family: var(--font-body);
-  font-size: var(--text-body);
 }
 
 .text-small {

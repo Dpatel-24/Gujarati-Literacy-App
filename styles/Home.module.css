@@ -61,10 +61,6 @@
 
 /* ---------- Letters front-matter block ---------- */
 
-.lettersSection {
-  margin-bottom: 2.5rem;
-}
-
 .lettersBlock {
   background: var(--paper-dim);
   border: 1px solid rgba(184, 147, 74, 0.4); /* var(--gold) at reduced opacity */
