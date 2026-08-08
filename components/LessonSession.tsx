@@ -55,6 +55,7 @@ export default function LessonSession({ items, mode, onComplete }: LessonSession
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showUnderline, setShowUnderline] = useState(false);
   const [quiz, setQuiz] = useState<MultipleChoiceQuestion | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [recordError, setRecordError] = useState<string | null>(null);
@@ -69,6 +70,7 @@ export default function LessonSession({ items, mode, onComplete }: LessonSession
   useEffect(() => {
     setRevealed(false);
     setShowBreakdown(false);
+    setShowUnderline(false);
     setSelectedOption(null);
     setRecordError(null);
 
@@ -142,12 +144,22 @@ export default function LessonSession({ items, mode, onComplete }: LessonSession
       {mode === 'study' && (
         <div key={`study-${index}`} className={styles.fadeIn}>
           <div className={styles.heroWrap}>
-            {showBreakdown && showsBreakdown ? (
+            {showsBreakdown && (showBreakdown || showUnderline) ? (
               <div className={styles.heroInterlinear}>
                 {graphemeClusters.map((cluster, i) => (
                   <span key={i} className={styles.heroChar}>
-                    <span className={styles.heroCharGlyph}>{cluster}</span>
-                    <span className={styles.heroCharAnnotation}>{annotationFor(decompose(cluster))}</span>
+                    <span
+                      className={
+                        showUnderline
+                          ? `${styles.heroCharGlyph} ${styles.heroCharGlyphUnderlined}`
+                          : styles.heroCharGlyph
+                      }
+                    >
+                      {cluster}
+                    </span>
+                    {showBreakdown && (
+                      <span className={styles.heroCharAnnotation}>{annotationFor(decompose(cluster))}</span>
+                    )}
                   </span>
                 ))}
               </div>
@@ -173,6 +185,9 @@ export default function LessonSession({ items, mode, onComplete }: LessonSession
                 <div className={styles.breakdownSection}>
                   <button onClick={() => setShowBreakdown((s) => !s)} className={styles.breakdownToggle}>
                     {showBreakdown ? 'Hide letter breakdown' : 'Show letter breakdown'}
+                  </button>
+                  <button onClick={() => setShowUnderline((s) => !s)} className={styles.breakdownToggle}>
+                    {showUnderline ? 'Hide underlined letters' : 'Underline letters'}
                   </button>
                 </div>
               )}
