@@ -2,6 +2,8 @@
  * Multiple-choice quiz generation for content_items.
  */
 
+import { shuffle } from './shuffle';
+
 export interface ContentItem {
   id: string;
   gujarati_text: string;
@@ -31,15 +33,6 @@ function answerTextFor(item: ContentItem): string {
     return item.phonetic_text;
   }
   return item.meaning ?? item.phonetic_text;
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const result = [...arr];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
 }
 
 /**

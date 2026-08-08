@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { GetServerSideProps } from 'next';
 import { query } from '@/lib/db';
+import { shuffle } from '@/lib/shuffle';
 import LessonSession, { type ContentItem, type LessonSessionMode } from '@/components/LessonSession';
 import styles from '@/styles/PageShell.module.css';
 
@@ -43,7 +44,10 @@ export const getServerSideProps: GetServerSideProps<LessonPageProps> = async (co
     [unitId, SESSION_SIZE_CAP],
   );
 
-  return { props: { unitId, unitName, items: rows } };
+  // Selection/priority order above is what decides *which* items make
+  // the cut; once that's settled, shuffle purely for presentation
+  // order so the same due item isn't always first, etc.
+  return { props: { unitId, unitName, items: shuffle(rows) } };
 };
 
 export default function LessonPage({ unitName, items }: LessonPageProps) {
