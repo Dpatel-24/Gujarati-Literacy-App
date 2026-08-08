@@ -5,6 +5,14 @@
   border: 1px solid rgba(184, 147, 74, 0.4); /* var(--gold) at reduced opacity */
   border-radius: 6px;
   padding: 2rem 1.75rem;
+  /* Extra bottom padding on top of the base 2rem so the Next/Reveal
+     button and quiz options aren't tucked under a phone's home
+     indicator or other bottom UI chrome on notched devices. env()
+     resolves to 0 on devices without a safe area, so this is a no-op
+     everywhere else. */
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .progress {
@@ -37,11 +45,18 @@
 }
 
 /* Plain hero: used when there's no letter breakdown showing (all
-   letters, and words/sentences before the toggle is switched on). */
+   letters, and words/sentences before the toggle is switched on).
+   clamp() instead of a fixed size + breakpoint override -- scales
+   continuously down to phone widths instead of jumping at one
+   threshold, and guarantees the glyph never forces horizontal
+   scroll: at the 375px viewport floor this resolves to ~44px, well
+   under the ~290px available content width even for multi-character
+   words (which also wrap via .heroInterlinear's flex-wrap besides). */
 .hero {
   font-family: var(--font-display);
-  font-size: 5rem;
+  font-size: clamp(2.75rem, 15vw, 5rem);
   line-height: 1.1;
+  overflow-wrap: break-word;
   color: var(--ink);
 }
 
@@ -69,7 +84,7 @@
 
 .heroCharGlyph {
   font-family: var(--font-display);
-  font-size: 5rem;
+  font-size: clamp(2.75rem, 15vw, 5rem);
   line-height: 1.1;
   color: var(--ink);
 }
@@ -165,8 +180,9 @@
 
 .quizHero {
   font-family: var(--font-display);
-  font-size: 3.25rem;
+  font-size: clamp(2rem, 9vw, 3.25rem);
   line-height: 1.1;
+  overflow-wrap: break-word;
   color: var(--ink);
 }
 
@@ -259,19 +275,53 @@
 @media (max-width: 480px) {
   .leaf {
     padding: 1.5rem 1.25rem;
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    /* Hero sizes are already fluid via clamp() above -- no fixed
+       override needed here any more. */
   }
 
-  .hero,
-  .heroCharGlyph {
-    font-size: 3.75rem;
+  /* Tighten the row/column gaps a little at phone widths so more of
+     a long word's segments fit per line before wrapping, while still
+     keeping segment boundaries visually distinct. */
+  .heroInterlinear {
+    gap: 0.4rem 0.45rem;
   }
 
-  .quizHero {
-    font-size: 2.75rem;
+  .heroCharAnnotation {
+    font-size: 0.75rem;
   }
 
   .primaryButton,
   .optionButton {
     width: 100%;
+  }
+
+  /* Reveal/Next/Continue and the two per-item toggles all end up
+     stacked in a column on phones -- explicit gap between them so
+     adjacent tap targets never sit edge-to-edge. */
+  .actionRow {
+    margin-top: 1.25rem;
+  }
+
+  .breakdownSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+  }
+
+  .breakdownToggle {
+    margin: 0 auto;
+    width: fit-content;
+  }
+}
+
+/* Below ~360px (older/smaller phones, or a phone in a split-screen
+   view) the leaf's own horizontal padding starts to matter more than
+   usual -- trim it further so content width stays comfortable. */
+@media (max-width: 360px) {
+  .leaf {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

@@ -5,6 +5,7 @@
 
 .page {
   padding: 2.5rem 1.5rem;
+  padding-bottom: calc(2.5rem + env(safe-area-inset-bottom));
   max-width: 700px;
   margin: 0 auto;
 }
@@ -113,4 +114,28 @@
 
 .modeButtonQuiz:hover {
   box-shadow: 0 2px 6px rgba(31, 92, 86, 0.35);
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 1.75rem 1.25rem;
+    padding-bottom: calc(1.75rem + env(safe-area-inset-bottom));
+  }
+
+  .emptyLeaf,
+  .modeLeaf {
+    padding: 1.75rem 1.25rem;
+  }
+
+  /* Study / Quiz me side-by-side is fine on a phone-width screen at
+     these paddings, but stack them full-width so each keeps a
+     comfortable tap target instead of two skinny buttons crammed
+     together. */
+  .modeButtons {
+    flex-direction: column;
+  }
+
+  .modeButton {
+    width: 100%;
+  }
 }

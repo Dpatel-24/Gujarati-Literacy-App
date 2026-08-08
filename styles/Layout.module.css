@@ -43,11 +43,28 @@
 
 @media (max-width: 640px) {
   .nav {
-    padding: 0.75rem 1rem;
+    /* Sticky nav stays pinned while scrolling, so its height is a
+       permanent tax on a phone's viewport -- kept deliberately tight
+       (smaller logotype, smaller link gaps) rather than growing to
+       however many rows six links naturally wrap to. */
+    padding: 0.6rem 1rem;
+  }
+
+  .logotype {
+    font-size: 1rem;
   }
 
   .links {
     width: 100%;
-    gap: 0.5rem 1rem;
+    gap: 0.4rem 0.9rem;
+  }
+
+  .link {
+    /* Slightly taller tap area than the desktop link without adding
+       much visual height, since text + padding is what's tappable
+       here, not a bounding box -- kept modest on purpose so 6 links
+       wrapping to 2-3 rows doesn't consume too much of a 375-844px
+       viewport. */
+    padding: 0.35rem 0.1rem;
   }
 }

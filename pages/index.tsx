@@ -130,7 +130,6 @@ export default function Home({ lettersUnits, textUnits, vocabularyUnits, unassig
       <Head>
         <title>Gujarati Literacy</title>
         <meta name="description" content="Personal Gujarati literacy app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main className={styles.page}>
         <div className={styles.hero}>
