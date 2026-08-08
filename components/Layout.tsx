@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: '/review', label: 'Review' },
   { href: '/admin/import-text', label: 'Import Text' },
   { href: '/admin/review-vocab', label: 'Review Vocab' },
+  { href: '/admin/vocab-groups', label: 'Vocab Groups' },
   { href: '/admin/help', label: 'Help' },
 ];
 
