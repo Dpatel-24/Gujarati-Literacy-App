@@ -16,12 +16,24 @@ export interface VowelInfo {
   char: string;
   name: string;
   phoneticEnglish: string;
+  /**
+   * An English sound-alike reference, e.g. "like 'a' in father". May
+   * contain the literal substring "[approx]" flagging that there's no
+   * exact English equivalent and this is the closest reference point
+   * -- callers should strip that tag before display and render the
+   * example with a visibly different (e.g. italic) treatment instead.
+   * Optional: not every entry has one (e.g. ઋ, outside this app's
+   * curated list).
+   */
+  soundExample?: string;
 }
 
 export interface ConsonantInfo {
   char: string;
   name: string;
   phoneticEnglish: string;
+  /** See VowelInfo.soundExample -- same convention, same [approx] tag. */
+  soundExample?: string;
 }
 
 export interface MatraInfo {
@@ -49,19 +61,20 @@ export interface DecomposeResult {
  * distinct from ર (the consonant "ra") — don't confuse the two.
  */
 export const INDEPENDENT_VOWELS: readonly VowelInfo[] = [
-  { char: 'અ', name: 'a', phoneticEnglish: 'a' },
-  { char: 'આ', name: 'aa', phoneticEnglish: 'aa' },
-  { char: 'ઇ', name: 'i', phoneticEnglish: 'i' },
-  { char: 'ઈ', name: 'ii', phoneticEnglish: 'ee' },
-  { char: 'ઉ', name: 'u', phoneticEnglish: 'u' },
-  { char: 'ઊ', name: 'uu', phoneticEnglish: 'oo' },
+  { char: 'અ', name: 'a', phoneticEnglish: 'a', soundExample: "like 'a' in sofa" },
+  { char: 'આ', name: 'aa', phoneticEnglish: 'aa', soundExample: "like 'a' in father" },
+  { char: 'ઇ', name: 'i', phoneticEnglish: 'i', soundExample: "like 'i' in sit" },
+  { char: 'ઈ', name: 'ii', phoneticEnglish: 'ee', soundExample: "like 'ee' in see" },
+  { char: 'ઉ', name: 'u', phoneticEnglish: 'u', soundExample: "like 'u' in put" },
+  { char: 'ઊ', name: 'uu', phoneticEnglish: 'oo', soundExample: "like 'oo' in food" },
+  // ઋ (vocalic r) has no curated soundExample -- outside the given list.
   { char: 'ઋ', name: 'ri', phoneticEnglish: 'ri' },
-  { char: 'એ', name: 'e', phoneticEnglish: 'e' },
-  { char: 'ઐ', name: 'ai', phoneticEnglish: 'ai' },
-  { char: 'ઓ', name: 'o', phoneticEnglish: 'o' },
-  { char: 'ઔ', name: 'au', phoneticEnglish: 'au' },
-  { char: 'અં', name: 'am', phoneticEnglish: 'am' },
-  { char: 'અઃ', name: 'ah', phoneticEnglish: 'ah' },
+  { char: 'એ', name: 'e', phoneticEnglish: 'e', soundExample: "like 'ay' in day" },
+  { char: 'ઐ', name: 'ai', phoneticEnglish: 'ai', soundExample: "like 'ai' in aisle" },
+  { char: 'ઓ', name: 'o', phoneticEnglish: 'o', soundExample: "like 'o' in go" },
+  { char: 'ઔ', name: 'au', phoneticEnglish: 'au', soundExample: "like 'ow' in cow" },
+  { char: 'અં', name: 'am', phoneticEnglish: 'am', soundExample: "nasal — like French 'un'" },
+  { char: 'અઃ', name: 'ah', phoneticEnglish: 'ah', soundExample: 'breathy echo of the vowel before it' },
 ];
 
 /** Independent vowels keyed by their unicode char for O(1) lookup. */
@@ -71,46 +84,168 @@ export const INDEPENDENT_VOWELS_BY_CHAR: ReadonlyMap<string, VowelInfo> = new Ma
 
 /** The 34 base Gujarati consonants, in traditional varnamala order. */
 export const CONSONANTS: readonly ConsonantInfo[] = [
-  { char: 'ક', name: 'ka', phoneticEnglish: 'ka' },
-  { char: 'ખ', name: 'kha', phoneticEnglish: 'kha' },
-  { char: 'ગ', name: 'ga', phoneticEnglish: 'ga' },
-  { char: 'ઘ', name: 'gha', phoneticEnglish: 'gha' },
-  { char: 'ઙ', name: 'nga', phoneticEnglish: 'nga' },
-  { char: 'ચ', name: 'cha', phoneticEnglish: 'cha' },
-  { char: 'છ', name: 'chha', phoneticEnglish: 'chha' },
-  { char: 'જ', name: 'ja', phoneticEnglish: 'ja' },
-  { char: 'ઝ', name: 'jha', phoneticEnglish: 'jha' },
-  { char: 'ઞ', name: 'nya', phoneticEnglish: 'nya' },
-  { char: 'ટ', name: 'tta', phoneticEnglish: 'ta' },
-  { char: 'ઠ', name: 'ttha', phoneticEnglish: 'tha' },
-  { char: 'ડ', name: 'dda', phoneticEnglish: 'da' },
-  { char: 'ઢ', name: 'ddha', phoneticEnglish: 'dha' },
-  { char: 'ણ', name: 'nna', phoneticEnglish: 'na' },
-  { char: 'ત', name: 'ta', phoneticEnglish: 'ta' },
-  { char: 'થ', name: 'tha', phoneticEnglish: 'tha' },
-  { char: 'દ', name: 'da', phoneticEnglish: 'da' },
-  { char: 'ધ', name: 'dha', phoneticEnglish: 'dha' },
-  { char: 'ન', name: 'na', phoneticEnglish: 'na' },
-  { char: 'પ', name: 'pa', phoneticEnglish: 'pa' },
-  { char: 'ફ', name: 'pha', phoneticEnglish: 'fa' },
-  { char: 'બ', name: 'ba', phoneticEnglish: 'ba' },
-  { char: 'ભ', name: 'bha', phoneticEnglish: 'bha' },
-  { char: 'મ', name: 'ma', phoneticEnglish: 'ma' },
-  { char: 'ય', name: 'ya', phoneticEnglish: 'ya' },
-  { char: 'ર', name: 'ra', phoneticEnglish: 'ra' },
-  { char: 'લ', name: 'la', phoneticEnglish: 'la' },
-  { char: 'વ', name: 'va', phoneticEnglish: 'va' },
-  { char: 'શ', name: 'sha', phoneticEnglish: 'sha' },
-  { char: 'ષ', name: 'ssha', phoneticEnglish: 'sha' },
-  { char: 'સ', name: 'sa', phoneticEnglish: 'sa' },
-  { char: 'હ', name: 'ha', phoneticEnglish: 'ha' },
-  { char: 'ળ', name: 'lla', phoneticEnglish: 'la' },
+  { char: 'ક', name: 'ka', phoneticEnglish: 'ka', soundExample: "like 'k' in skip (no puff of air)" },
+  {
+    char: 'ખ',
+    name: 'kha',
+    phoneticEnglish: 'kha',
+    soundExample: "like 'k' in kite (with a puff of air) [approx]",
+  },
+  { char: 'ગ', name: 'ga', phoneticEnglish: 'ga', soundExample: "like 'g' in go" },
+  {
+    char: 'ઘ',
+    name: 'gha',
+    phoneticEnglish: 'gha',
+    soundExample: "breathy 'g', no puff-free English equivalent [approx]",
+  },
+  { char: 'ઙ', name: 'nga', phoneticEnglish: 'nga', soundExample: "like 'ng' in sing" },
+  { char: 'ચ', name: 'cha', phoneticEnglish: 'cha', soundExample: "like 'ch' in chair" },
+  {
+    char: 'છ',
+    name: 'chha',
+    phoneticEnglish: 'chha',
+    soundExample: "breathier 'ch', no clean English equivalent [approx]",
+  },
+  { char: 'જ', name: 'ja', phoneticEnglish: 'ja', soundExample: "like 'j' in jam" },
+  {
+    char: 'ઝ',
+    name: 'jha',
+    phoneticEnglish: 'jha',
+    soundExample: "breathy 'j', no clean English equivalent [approx]",
+  },
+  { char: 'ઞ', name: 'nya', phoneticEnglish: 'nya', soundExample: "like 'ny' in canyon" },
+  {
+    char: 'ટ',
+    name: 'tta',
+    phoneticEnglish: 'ta',
+    soundExample: "retroflex 't', tongue curls back — closest is 't' in top [approx]",
+  },
+  {
+    char: 'ઠ',
+    name: 'ttha',
+    phoneticEnglish: 'tha',
+    soundExample: "breathy retroflex 't', no clean English equivalent [approx]",
+  },
+  {
+    char: 'ડ',
+    name: 'dda',
+    phoneticEnglish: 'da',
+    soundExample: "retroflex 'd' — closest is 'd' in dot [approx]",
+  },
+  {
+    char: 'ઢ',
+    name: 'ddha',
+    phoneticEnglish: 'dha',
+    soundExample: "breathy retroflex 'd', no clean English equivalent [approx]",
+  },
+  {
+    char: 'ણ',
+    name: 'nna',
+    phoneticEnglish: 'na',
+    soundExample: "retroflex 'n', no clean English equivalent [approx]",
+  },
+  {
+    char: 'ત',
+    name: 'ta',
+    phoneticEnglish: 'ta',
+    soundExample: "soft dental 't', tongue touches teeth — softer than English 't' [approx]",
+  },
+  {
+    char: 'થ',
+    name: 'tha',
+    phoneticEnglish: 'tha',
+    soundExample: "like 't' in top (this is actually closer to English 't' than ત is)",
+  },
+  {
+    char: 'દ',
+    name: 'da',
+    phoneticEnglish: 'da',
+    soundExample: "soft dental 'd', tongue touches teeth [approx]",
+  },
+  {
+    char: 'ધ',
+    name: 'dha',
+    phoneticEnglish: 'dha',
+    soundExample: "breathy dental 'd', no clean English equivalent [approx]",
+  },
+  { char: 'ન', name: 'na', phoneticEnglish: 'na', soundExample: "like 'n' in no" },
+  { char: 'પ', name: 'pa', phoneticEnglish: 'pa', soundExample: "like 'p' in spin (no puff of air)" },
+  {
+    char: 'ફ',
+    name: 'pha',
+    phoneticEnglish: 'fa',
+    soundExample: "like 'p' in pin (with a puff of air) — NOT like English 'f' despite the letter shape",
+  },
+  { char: 'બ', name: 'ba', phoneticEnglish: 'ba', soundExample: "like 'b' in bat" },
+  {
+    char: 'ભ',
+    name: 'bha',
+    phoneticEnglish: 'bha',
+    soundExample: "breathy 'b', no clean English equivalent [approx]",
+  },
+  { char: 'મ', name: 'ma', phoneticEnglish: 'ma', soundExample: "like 'm' in mat" },
+  { char: 'ય', name: 'ya', phoneticEnglish: 'ya', soundExample: "like 'y' in yes" },
+  {
+    char: 'ર',
+    name: 'ra',
+    phoneticEnglish: 'ra',
+    soundExample: "tapped/rolled 'r', like Spanish 'r' in pero [approx]",
+  },
+  { char: 'લ', name: 'la', phoneticEnglish: 'la', soundExample: "like 'l' in love" },
+  {
+    char: 'વ',
+    name: 'va',
+    phoneticEnglish: 'va',
+    soundExample: "between 'v' and 'w', like Spanish 'b/v' [approx]",
+  },
+  { char: 'શ', name: 'sha', phoneticEnglish: 'sha', soundExample: "like 'sh' in shoe" },
+  {
+    char: 'ષ',
+    name: 'ssha',
+    phoneticEnglish: 'sha',
+    soundExample: "retroflex 'sh', tongue curled back, no clean English equivalent [approx]",
+  },
+  { char: 'સ', name: 'sa', phoneticEnglish: 'sa', soundExample: "like 's' in sun" },
+  { char: 'હ', name: 'ha', phoneticEnglish: 'ha', soundExample: "like 'h' in hat" },
+  {
+    char: 'ળ',
+    name: 'lla',
+    phoneticEnglish: 'la',
+    soundExample: "retroflex 'l', no clean English equivalent [approx]",
+  },
 ];
 
 /** Consonants keyed by their unicode char for O(1) lookup. */
 export const CONSONANTS_BY_CHAR: ReadonlyMap<string, ConsonantInfo> = new Map(
   CONSONANTS.map((c) => [c.char, c]),
 );
+
+const APPROX_TAG = '[approx]';
+
+export interface SoundExample {
+  text: string;
+  /** True if the source entry was flagged "[approx]" -- there's no
+   * exact English equivalent and this is only the closest reference
+   * point. The tag itself is stripped from `text`; callers should
+   * render `isApprox` entries with a visibly different treatment
+   * (e.g. italic) rather than repeating a caveat in the copy. */
+  isApprox: boolean;
+}
+
+/**
+ * Looks up the English sound-alike example for a bare independent
+ * vowel or base consonant (letters only -- there's no meaningful
+ * "sound example" for a whole word). Returns null if the character
+ * isn't a vowel/consonant or has no curated example (e.g. ઋ).
+ */
+export function getSoundExample(char: string): SoundExample | null {
+  const entry = INDEPENDENT_VOWELS_BY_CHAR.get(char) ?? CONSONANTS_BY_CHAR.get(char);
+  if (!entry?.soundExample) return null;
+
+  const isApprox = entry.soundExample.includes(APPROX_TAG);
+  const text = entry.soundExample.replace(APPROX_TAG, '').trim();
+  return { text, isApprox };
+}
 
 /**
  * Dependent vowel signs (matras), each mapped to the independent vowel

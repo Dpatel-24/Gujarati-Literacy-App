@@ -123,6 +123,26 @@
   margin-bottom: 1.25rem;
 }
 
+/* English sound-alike example, letters only. Sits directly under
+   phoneticText, deliberately smaller/quieter than it so it reads as
+   a secondary annotation, not a second answer. */
+.soundExample {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--ink);
+  opacity: 0.65;
+  margin-bottom: 1.25rem;
+}
+
+/* Entries with no exact English equivalent ("[approx]" in the source
+   data, stripped before display) get italic instead of an inline
+   caveat -- honest that it's the closest reference point, not exact,
+   without repeating a disclaimer on every letter that needs one. */
+.soundExampleApprox {
+  font-style: italic;
+}
+
 .breakdownSection {
   margin: 1.5rem 0;
 }

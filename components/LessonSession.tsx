@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { decompose, toGraphemeClusters, type DecomposeResult } from '@/lib/gujarati-script';
+import { decompose, getSoundExample, toGraphemeClusters, type DecomposeResult } from '@/lib/gujarati-script';
 import { generateMultipleChoice, type ContentItem, type MultipleChoiceQuestion } from '@/lib/quiz';
 import styles from '@/styles/LessonSession.module.css';
 
@@ -103,6 +103,8 @@ export default function LessonSession({ items, mode, onComplete }: LessonSession
 
   const showsBreakdown = currentItem.item_type === 'word' || currentItem.item_type === 'sentence';
   const quizPrompt = currentItem.item_type === 'letter' ? 'What does this say?' : 'What does this mean?';
+  const soundExample =
+    currentItem.item_type === 'letter' ? getSoundExample(currentItem.gujarati_text) : null;
 
   async function handleSelectOption(option: string) {
     if (selectedOption || !quiz) return; // already answered this question
@@ -179,6 +181,17 @@ export default function LessonSession({ items, mode, onComplete }: LessonSession
           {revealed && (
             <div>
               <div className={styles.phoneticText}>{currentItem.phonetic_text}</div>
+              {soundExample && (
+                <div
+                  className={
+                    soundExample.isApprox
+                      ? `${styles.soundExample} ${styles.soundExampleApprox}`
+                      : styles.soundExample
+                  }
+                >
+                  {soundExample.text}
+                </div>
+              )}
               {currentItem.meaning && <div className={styles.meaningText}>{currentItem.meaning}</div>}
 
               {showsBreakdown && (
