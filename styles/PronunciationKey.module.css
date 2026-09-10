@@ -1,0 +1,120 @@
+/* Static reference page -- clean and scannable, no manuscript
+   ornamental treatment. Same token system as the rest of the app. */
+
+.page {
+  padding: 2.5rem 1.5rem 4rem;
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 2.5rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.intro {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  opacity: 0.85;
+  max-width: 60ch;
+  margin-bottom: 0.75rem;
+}
+
+.intro:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.intro strong {
+  font-weight: 600;
+}
+
+.sectionHeading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin: 2.5rem 0 1rem;
+}
+
+.sectionHeading:first-of-type {
+  margin-top: 0;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 3rem 4.5rem 1fr;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.65rem 0.35rem;
+  border-bottom: 1px solid rgba(184, 147, 74, 0.25); /* hairline var(--gold), low opacity */
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.glyph {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  color: var(--ink);
+}
+
+.iast {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink);
+  opacity: 0.8;
+}
+
+.example {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  opacity: 0.75;
+}
+
+/* Entries with no exact English equivalent -- italic, same convention
+   as the flashcard's sound-example treatment, honest without a
+   repeated caveat on every row. */
+.exampleApprox {
+  font-style: italic;
+}
+
+.noExample {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  opacity: 0.45;
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 2rem;
+  }
+
+  .row {
+    grid-template-columns: 2.5rem 3.75rem 1fr;
+    gap: 0.6rem;
+    padding: 0.6rem 0.25rem;
+  }
+
+  .glyph {
+    font-size: 1.5rem;
+  }
+
+  .example,
+  .noExample {
+    font-size: 0.85rem;
+  }
+}

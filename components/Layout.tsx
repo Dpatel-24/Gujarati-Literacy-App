@@ -6,6 +6,7 @@ import styles from '@/styles/Layout.module.css';
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/review', label: 'Review' },
+  { href: '/pronunciation-key', label: 'Pronunciation' },
   { href: '/admin/import-text', label: 'Import Text' },
   { href: '/admin/review-vocab', label: 'Review Vocab' },
   { href: '/admin/vocab-groups', label: 'Vocab Groups' },
