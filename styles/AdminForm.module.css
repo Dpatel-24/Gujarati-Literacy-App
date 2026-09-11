@@ -77,8 +77,12 @@
 }
 
 /* Primary action -- submit / extract / import. Solid rubric, the
-   accent reserved for primary actions across the app. */
+   accent reserved for primary actions across the app. inline-block +
+   centered text so this also works applied to a Link/<a> (e.g. "Import
+   text"), not just a <button>. */
 .primaryButton {
+  display: inline-block;
+  text-align: center;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 1rem;

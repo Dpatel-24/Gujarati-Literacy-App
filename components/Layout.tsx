@@ -7,7 +7,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/review', label: 'Review' },
   { href: '/pronunciation-key', label: 'Pronunciation' },
-  { href: '/admin/import-text', label: 'Import Text' },
+  { href: '/admin/text', label: 'Text' },
   { href: '/admin/review-vocab', label: 'Review Vocab' },
   { href: '/admin/vocab-groups', label: 'Vocab Groups' },
   { href: '/admin/help', label: 'Help' },
@@ -29,7 +29,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         <span className={styles.logotype}>Gujarati Literacy</span>
         <div className={styles.links}>
           {NAV_LINKS.map((link) => {
-            const isActive = router.pathname === link.href;
+            // Exact match, or a sub-page of this link (e.g. Text's
+            // /admin/text/import), so a nested page still shows its
+            // parent tab as current.
+            const isActive =
+              router.pathname === link.href ||
+              (link.href !== '/' && router.pathname.startsWith(`${link.href}/`));
             return (
               <Link
                 key={link.href}

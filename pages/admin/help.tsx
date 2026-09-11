@@ -16,7 +16,7 @@ export default function Help() {
         <h2 className={styles.sectionHeading}>Adding new content</h2>
         <ol className={styles.skippedList}>
           <li>
-            <strong>Import Text</strong> — paste a Gujarati text and its line-aligned phonetic
+            <strong>Text → Import text</strong> — paste a Gujarati text and its line-aligned phonetic
             transliteration. This creates a source text and, optionally, extracts candidate vocabulary words
             from it right away.
           </li>
